@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Email Marketing · iSend</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #16161f;
+  --border: #1e1e2e;
+  --clube: #4ade80;
+  --clube-dim: #166534;
+  --clube-glow: rgba(74,222,128,0.12);
+  --operadora: #38bdf8;
+  --operadora-dim: #075985;
+  --operadora-glow: rgba(56,189,248,0.12);
+  --text: #e2e8f0;
+  --muted: #64748b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-weight:300; min-height:100vh; }
+.wrapper { max-width:1400px; margin:0 auto; padding:32px 20px 80px; }
+
+/* HEADER */
+header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:36px; padding-bottom:28px; border-bottom:1px solid var(--border); }
+header h1 { font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(24px,4vw,42px); letter-spacing:-1.5px; line-height:1.05; background:linear-gradient(135deg,#fff 30%,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+header p { margin-top:6px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
+.period-badge { background:var(--surface2); border:1px solid var(--border); padding:8px 14px; border-radius:100px; font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; white-space:nowrap; align-self:flex-start; }
+
+/* STICKY TAB NAV */
+.tab-nav-wrap { position:sticky; top:0; z-index:999; padding:8px 0 12px; background:var(--bg); }
+.tab-nav { display:inline-flex; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:4px; }
+.tab-btn { padding:10px 24px; border-radius:8px; border:none; background:transparent; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; color:var(--muted); display:inline-flex; align-items:center; gap:8px; -webkit-tap-highlight-color:transparent; }
+.tab-btn:hover { color:var(--text); }
+.tab-btn.is-active-clube { background:var(--clube-glow); border:1px solid var(--clube-dim); color:var(--clube); }
+.tab-btn.is-active-operadora { background:var(--operadora-glow); border:1px solid var(--operadora-dim); color:var(--operadora); }
+.dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.dot-c { background:var(--clube); }
+.dot-o { background:var(--operadora); }
+
+/* PANELS */
+.tab-panel { display:none; }
+.tab-panel.is-active { display:block; animation:fi .3s ease; }
+@keyframes fi { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* METRIC CARDS */
+.metrics-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; }
+.metric-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; position:relative; overflow:hidden; }
+.metric-card::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; border-radius:14px 14px 0 0; }
+.panel-clube .metric-card::before { background:linear-gradient(90deg,var(--clube),transparent); }
+.panel-op .metric-card::before { background:linear-gradient(90deg,var(--operadora),transparent); }
+.metric-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.metric-value { font-family:'Syne',sans-serif; font-weight:700; font-size:30px; line-height:1; letter-spacing:-1px; }
+.panel-clube .metric-value { color:var(--clube); }
+.panel-op .metric-value { color:var(--operadora); }
+.metric-unit { font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); margin-top:5px; display:block; }
+
+/* BEST CARDS */
+.best-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; }
+.best-card { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:16px; }
+.bc-icon { font-size:18px; margin-bottom:6px; }
+.bc-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+.bc-val { font-family:'Syne',sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.5px; margin-bottom:2px; }
+.bc-sub { font-size:12px; color:var(--muted); }
+
+/* CHART CARD */
+.chart-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; }
+.chart-title { font-family:'Syne',sans-serif; font-weight:600; font-size:14px; margin-bottom:18px; }
+.charts-row { display:grid; grid-template-columns:1.2fr 1fr; gap:14px; margin-bottom:14px; }
+.dual-charts { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.summary-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+
+/* BAR CHARTS */
+.bar-chart { display:flex; flex-direction:column; gap:8px; }
+.bar-row { display:grid; grid-template-columns:72px 1fr 48px; align-items:center; gap:10px; }
+.bl { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-align:right; }
+.bt { height:7px; background:var(--border); border-radius:100px; overflow:hidden; }
+.bf { height:100%; border-radius:100px; }
+.panel-clube .bf { background:linear-gradient(90deg,var(--clube-dim),var(--clube)); }
+.panel-op .bf { background:linear-gradient(90deg,var(--operadora-dim),var(--operadora)); }
+.bv { font-family:'DM Mono',monospace; font-size:11px; font-weight:500; }
+.panel-clube .bv { color:var(--clube); }
+.panel-op .bv { color:var(--operadora); }
+.bar-row.hl .bl { color:var(--text); }
+
+/* MONTH CHART */
+.month-chart { display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:20px; }
+.mc { flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end; }
+.mb { width:100%; border-radius:6px 6px 0 0; position:relative; cursor:pointer; }
+.mb::after { content:attr(data-v); position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-family:'DM Mono',monospace; font-size:10px; white-space:nowrap; opacity:0; transition:opacity .15s; }
+.mb:hover::after { opacity:1; }
+.panel-clube .mb { background:linear-gradient(180deg,var(--clube),var(--clube-dim)); }
+.panel-clube .mb::after { color:var(--clube); }
+.panel-op .mb { background:linear-gradient(180deg,var(--operadora),var(--operadora-dim)); }
+.panel-op .mb::after { color:var(--operadora); }
+.ml { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; }
+
+/* SUMMARY */
+.summary-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; }
+.sum-table { width:100%; border-collapse:collapse; }
+.sum-table th { text-align:left; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); padding:0 0 12px; border-bottom:1px solid var(--border); }
+.sum-table td { padding:10px 0; font-size:13px; border-bottom:1px solid rgba(30,30,46,0.5); }
+.sum-table tr:last-child td { border-bottom:none; }
+.mdot { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:8px; vertical-align:middle; }
+.panel-clube .mdot { background:var(--clube); }
+.panel-op .mdot { background:var(--operadora); }
+.sn { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; text-align:right; }
+.panel-clube .sn { color:var(--clube); }
+.panel-op .sn { color:var(--operadora); }
+
+/* INSIGHTS */
+.ibox { padding:13px; border-radius:10px; margin-bottom:10px; }
+.ibox:last-child { margin-bottom:0; }
+.itag { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; margin-bottom:5px; display:block; }
+.itext { font-size:13px; color:var(--text); line-height:1.6; }
+
+/* CANCEL */
+.cancel-section { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; margin-top:14px; position:relative; overflow:hidden; }
+.cancel-section::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,#f87171,transparent); }
+.cancel-header { display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+.cancel-badge { background:rgba(248,113,113,.12); border:1px solid rgba(248,113,113,.3); color:#f87171; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:100px; }
+.cancel-grid { display:grid; grid-template-columns:130px 1fr 1fr 1fr; gap:18px; align-items:start; }
+.ckpi { padding-right:18px; border-right:1px solid var(--border); }
+.ckpi-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.ckpi-val { font-family:'Syne',sans-serif; font-weight:700; font-size:36px; color:#f87171; letter-spacing:-2px; line-height:1; }
+.ckpi-sub { font-size:12px; color:var(--muted); margin-top:4px; }
+.ctitle { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.cr { display:grid; grid-template-columns:72px 1fr 30px; align-items:center; gap:10px; margin-bottom:7px; }
+.crl { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-align:right; }
+.crt { height:7px; background:var(--border); border-radius:100px; overflow:hidden; }
+.crf { height:100%; border-radius:100px; background:linear-gradient(90deg,#7f1d1d,#f87171); }
+.crv { font-family:'DM Mono',monospace; font-size:11px; color:#f87171; font-weight:500; }
+.cr.hl .crl { color:#fca5a5; }
+
+/* MOBILE */
+@media(max-width:720px) {
+  .metrics-grid { grid-template-columns:1fr 1fr; }
+  .best-cards { grid-template-columns:1fr 1fr; }
+  .charts-row, .dual-charts, .summary-row { grid-template-columns:1fr; }
+  .cancel-grid { grid-template-columns:1fr 1fr; }
+  .ckpi { border-right:none; border-bottom:1px solid var(--border); padding-right:0; padding-bottom:14px; }
+}
+@media(max-width:400px) {
+  .metric-value { font-size:22px; }
+  .tab-btn { padding:9px 16px; font-size:13px; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div>
+      <h1>Email Marketing<br>Dashboard</h1>
+      <p>iSend · Bancorbras · Por Centro de Custo</p>
+    </div>
+    <span class="period-badge">Jan – Abr 2026</span>
+  </header>
+
+  <div class="tab-nav-wrap">
+    <div class="tab-nav">
+      <button class="tab-btn is-active-clube" id="btn-clube" onclick="switchTab('clube')">
+        <span class="dot dot-c"></span>Clube
+      </button>
+      <button class="tab-btn" id="btn-operadora" onclick="switchTab('operadora')">
+        <span class="dot dot-o"></span>Operadora
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== CLUBE ===== -->
+  <div id="panel-clube" class="tab-panel panel-clube is-active">
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Total Enviados</div>
+        <div class="metric-value">2.383.540</div>
+        <span class="metric-unit">disparos no período</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Média de Abertura</div>
+        <div class="metric-value">27,95<span style="font-size:16px">%</span></div>
+        <span class="metric-unit">aberturas únicas</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Média de Clique</div>
+        <div class="metric-value">2,16<span style="font-size:16px">%</span></div>
+        <span class="metric-unit">cliques únicos</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Total de Campanhas</div>
+        <div class="metric-value">82</div>
+        <span class="metric-unit">envios realizados</span>
+      </div>
+    </div>
+
+    <div class="best-cards">
+      <div class="best-card">
+        <div class="bc-icon">🕐</div>
+        <div class="bc-label">Melhor Horário · Clique</div>
+        <div class="bc-val" style="color:var(--clube)">14h00</div>
+        <div class="bc-sub">Média 3,42% de cliques</div>
+      </div>
+      <div class="best-card">
+        <div class="bc-icon">🕙</div>
+        <div class="bc-label">Melhor Horário · Abertura</div>
+        <div class="bc-val" style="color:var(--clube)">10h00</div>
+        <div class="bc-sub">Média 35,72% de abertura</div>
+      </div>
+      <div class="best-card">
+        <div class="bc-icon">📅</div>
+        <div class="bc-label">Melhor Dia · Clique</div>
+        <div class="bc-val" style="color:var(--clube)">Segunda</div>
+        <div class="bc-sub">Média 3,47% de cliques</div>
+      </div>
+      <div class="best-card">
+        <div class="bc-icon">📬</div>
+        <div class="bc-label">Melhor Dia · Abertura</div>
+        <div class="bc-val" style="color:var(--clube)">Segunda</div>
+        <div class="bc-sub">Média 40,27% de abertura</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Emails Enviados por Mês</div>
+        <div class="month-chart">
+          <div class="mc"><div class="mb" style="height:60%" data-v="558.284"></div><div class="ml">Jan</div></div>
+          <div class="mc"><div class="mb" style="height:64%" data-v="567.728"></div><div class="ml">Fev</div></div>
+          <div class="mc"><div class="mb" style="height:100%" data-v="647.467"></div><div class="ml">Mar</div></div>
+          <div class="mc"><div class="mb" style="height:83%" data-v="610.061"></div><div class="ml">Abr</div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Taxa de Clique por Horário</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bl">08h</div><div class="bt"><div class="bf" style="width:14.6%"></div></div><div class="bv">0,50%</div></div>
+          <div class="bar-row"><div class="bl">09h</div><div class="bt"><div class="bf" style="width:52.3%"></div></div><div class="bv">1,79%</div></div>
+          <div class="bar-row"><div class="bl">10h</div><div class="bt"><div class="bf" style="width:89.8%"></div></div><div class="bv">3,07%</div></div>
+          <div class="bar-row"><div class="bl">11h</div><div class="bt"><div class="bf" style="width:49.7%"></div></div><div class="bv">1,70%</div></div>
+          <div class="bar-row"><div class="bl">12h</div><div class="bt"><div class="bf" style="width:49.7%"></div></div><div class="bv">1,70%</div></div>
+          <div class="bar-row hl"><div class="bl">14h ★</div><div class="bt"><div class="bf" style="width:100%"></div></div><div class="bv">3,42%</div></div>
+          <div class="bar-row"><div class="bl">15h</div><div class="bt"><div class="bf" style="width:51.8%"></div></div><div class="bv">1,77%</div></div>
+          <div class="bar-row"><div class="bl">16h</div><div class="bt"><div class="bf" style="width:48.2%"></div></div><div class="bv">1,65%</div></div>
+          <div class="bar-row"><div class="bl">17h</div><div class="bt"><div class="bf" style="width:16.1%"></div></div><div class="bv">0,55%</div></div>
+          <div class="bar-row"><div class="bl">20h</div><div class="bt"><div class="bf" style="width:23.4%"></div></div><div class="bv">0,80%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dual-charts">
+      <div class="chart-card">
+        <div class="chart-title">Taxa de Abertura por Horário</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bl">08h</div><div class="bt"><div class="bf" style="width:61%"></div></div><div class="bv">21,80%</div></div>
+          <div class="bar-row"><div class="bl">09h</div><div class="bt"><div class="bf" style="width:77.5%"></div></div><div class="bv">27,69%</div></div>
+          <div class="bar-row hl"><div class="bl">10h ★</div><div class="bt"><div class="bf" style="width:100%"></div></div><div class="bv">35,72%</div></div>
+          <div class="bar-row"><div class="bl">11h</div><div class="bt"><div class="bf" style="width:78.8%"></div></div><div class="bv">28,14%</div></div>
+          <div class="bar-row"><div class="bl">12h</div><div class="bt"><div class="bf" style="width:73.4%"></div></div><div class="bv">26,20%</div></div>
+          <div class="bar-row"><div class="bl">14h</div><div class="bt"><div class="bf" style="width:58.9%"></div></div><div class="bv">21,04%</div></div>
+          <div class="bar-row"><div class="bl">15h</div><div class="bt"><div class="bf" style="width:63.1%"></div></div><div class="bv">22,52%</div></div>
+          <div class="bar-row"><div class="bl">16h</div><div class="bt"><div class="bf" style="width:77.3%"></div></div><div class="bv">27,60%</div></div>
+          <div class="bar-row"><div class="bl">17h</div><div class="bt"><div class="bf" style="width:68.9%"></div></div><div class="bv">24,60%</div></div>
+          <div class="bar-row"><div class="bl">20h</div><div class="bt"><div class="bf" style="width:91.1%"></div></div><div class="bv">32,52%</div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Taxa por Dia da Semana</div>
+        <div style="margin-bottom:16px">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:9px">Clique (%)</div>
+          <div class="bar-chart">
+            <div class="bar-row hl"><div class="bl">Segunda ★</div><div class="bt"><div class="bf" style="width:100%"></div></div><div class="bv">3,47%</div></div>
+            <div class="bar-row"><div class="bl">Terça</div><div class="bt"><div class="bf" style="width:35.7%"></div></div><div class="bv">1,24%</div></div>
+            <div class="bar-row"><div class="bl">Quarta</div><div class="bt"><div class="bf" style="width:62.5%"></div></div><div class="bv">2,17%</div></div>
+            <div class="bar-row"><div class="bl">Quinta</div><div class="bt"><div class="bf" style="width:27.1%"></div></div><div class="bv">0,94%</div></div>
+            <div class="bar-row"><div class="bl">Sexta</div><div class="bt"><div class="bf" style="width:78.1%"></div></div><div class="bv">2,71%</div></div>
+            <div class="bar-row"><div class="bl">Sábado</div><div class="bt"><div class="bf" style="width:66.3%"></div></div><div class="bv">2,30%</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:9px">Abertura (%)</div>
+          <div class="bar-chart">
+            <div class="bar-row hl"><div class="bl">Segunda ★</div><div class="bt"><div class="bf" style="width:100%"></div></div><div class="bv">40,27%</div></div>
+            <div class="bar-row"><div class="bl">Terça</div><div class="bt"><div class="bf" style="width:91.7%"></div></div><div class="bv">36,94%</div></div>
+            <div class="bar-row"><div class="bl">Quarta</div><div class="bt"><div class="bf" style="width:72.7%"></div></div><div class="bv">29,26%</div></div>
+            <div class="bar-row"><div class="bl">Quinta</div><div class="bt"><div class="bf" style="width:80.1%"></div></div><div class="bv">32,26%</div></div>
+            <div class="bar-row"><div class="bl">Sexta</div><div class="bt"><div class="bf" style="width:55%"></div></div><div class="bv">22,16%</div></div>
+            <div class="bar-row"><div class="bl">Sábado</div><div class="bt"><div class="bf" style="width:52.9%"></div></div><div class="bv">21,32%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="chart-title">Volume Mensal</div>
+        <table class="sum-table">
+          <thead><tr><th>Mês</th><th style="text-align:right">Emails Enviados</th><th style="text-align:right">% do Total</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mdot"></span>Janeiro</td><td class="sn">558.284</td><td class="sn">23,4%</td></tr>
+            <tr><td><span class="mdot"></span>Fevereiro</td><td class="sn">567.728</td><td class="sn">23,8%</td></tr>
+            <tr><td><span class="mdot"></span>Março</td><td class="sn">647.467</td><td class="sn">27,2%</td></tr>
+            <tr><td><span class="mdot"></span>Abril</td><td class="sn">610.061</td><td class="sn">25,6%</td></tr>
+            <tr><td style="font-weight:500;color:var(--text)">Total</td><td class="sn" style="font-family:'Syne',sans-serif;font-size:15px">2.383.540</td><td class="sn">100%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="summary-card">
+        <div class="chart-title">Insights · Clube</div>
+        <div class="ibox" style="background:var(--clube-glow);border:1px solid var(--clube-dim)">
+          <span class="itag" style="color:var(--clube)">⚡ Melhor janela de envio</span>
+          <span class="itext">Segunda-feira às 14h00 é ideal para cliques. Use 10h para maximizar abertura.</span>
+        </div>
+        <div class="ibox" style="background:var(--surface2);border:1px solid var(--border)">
+          <span class="itag" style="color:var(--muted)">📈 Tendência mensal</span>
+          <span class="itext">Março registrou o maior volume (647K), pico das campanhas do Mês do Consumidor.</span>
+        </div>
+        <div class="ibox" style="background:var(--surface2);border:1px solid var(--border)">
+          <span class="itag" style="color:var(--muted)">⚠️ Atenção</span>
+          <span class="itext">Quinta-feira tem menor taxa de clique (0,94%). Evitar envios principais neste dia.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cancel-section">
+      <div class="cancel-header">
+        <div class="chart-title" style="margin-bottom:0">Cancelamentos · Clube</div>
+        <span class="cancel-badge">⚠ Descadastros</span>
+      </div>
+      <div class="cancel-grid">
+        <div class="ckpi">
+          <div class="ckpi-label">Total</div>
+          <div class="ckpi-val">267</div>
+          <div class="ckpi-sub">Jan–Abr 2026</div>
+        </div>
+        <div>
+          <div class="ctitle">Por Mês</div>
+          <div class="cr"><div class="crl">Janeiro</div><div class="crt"><div class="crf" style="width:34%"></div></div><div class="crv">33</div></div>
+          <div class="cr"><div class="crl">Fevereiro</div><div class="crt"><div class="crf" style="width:71%"></div></div><div class="crv">69</div></div>
+          <div class="cr"><div class="crl">Março</div><div class="crt"><div class="crf" style="width:77%"></div></div><div class="crv">75</div></div>
+          <div class="cr hl"><div class="crl">Abril ★</div><div class="crt"><div class="crf" style="width:100%"></div></div><div class="crv">90</div></div>
+        </div>
+        <div>
+          <div class="ctitle">Por Horário</div>
+          <div class="cr"><div class="crl">08h</div><div class="crt"><div class="crf" style="width:69%"></div></div><div class="crv">50</div></div>
+          <div class="cr"><div class="crl">09h</div><div class="crt"><div class="crf" style="width:17%"></div></div><div class="crv">12</div></div>
+          <div class="cr"><div class="crl">10h</div><div class="crt"><div class="crf" style="width:60%"></div></div><div class="crv">43</div></div>
+          <div class="cr"><div class="crl">11h</div><div class="crt"><div class="crf" style="width:47%"></div></div><div class="crv">34</div></div>
+          <div class="cr"><div class="crl">14h</div><div class="crt"><div class="crf" style="width:35%"></div></div><div class="crv">25</div></div>
+          <div class="cr"><div class="crl">17h</div><div class="crt"><div class="crf" style="width:24%"></div></div><div class="crv">17</div></div>
+          <div class="cr hl"><div class="crl">20h ★</div><div class="crt"><div class="crf" style="width:100%"></div></div><div class="crv">72</div></div>
+        </div>
+        <div>
+          <div class="ctitle">Por Dia da Semana</div>
+          <div class="cr"><div class="crl">Segunda</div><div class="crt"><div class="crf" style="width:7%"></div></div><div class="crv">7</div></div>
+          <div class="cr"><div class="crl">Terça</div><div class="crt"><div class="crf" style="width:37%"></div></div><div class="crv">36</div></div>
+          <div class="cr hl"><div class="crl">Quarta ★</div><div class="crt"><div class="crf" style="width:100%"></div></div><div class="crv">97</div></div>
+          <div class="cr"><div class="crl">Quinta</div><div class="crt"><div class="crf" style="width:61%"></div></div><div class="crv">59</div></div>
+          <div class="cr"><div class="crl">Sexta</div><div class="crt"><div class="crf" style="width:57%"></div></div><div class="crv">55</div></div>
+          <div class="cr"><div class="crl">Sábado</div><div class="crt"><div class="crf" style="width:13%"></div></div><div class="crv">13</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-clube -->
+
+
+  <!-- ===== OPERADORA ===== -->
+  <div id="panel-operadora" class="tab-panel panel-op">
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Total Enviados</div>
+        <div class="metric-value">20.308</div>
+        <span class="metric-unit">disparos no período</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Média de Abertura</div>
+        <div class="metric-value">37,77<span style="font-size:16px">%</span></div>
+        <span class="metric-unit">aberturas únicas</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Média de Clique</div>
+        <div class="metric-value">2,64<span style="font-size:16px">%</span></div>
+        <span class="metric-unit">cliques únicos</span>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Total de Campanhas</div>
+        <div class="metric-value">97</div>
+        <span class="metric-unit">envios realizados</span>
+      </div>
+    </div>
+
+    <div class="best-cards">
+      <div class="best-card">
+        <div class="bc-icon">🕙</div>
+        <div class="bc-label">Melhor Horário · Clique</div>
+        <div class="bc-val" style="color:var(--operadora)">10h00</div>
+        <div class="bc-sub">Média 5,35% de cliques</div>
+      </div>
+      <div class="best-card">
+        <div class="bc-icon">🕘</div>
+        <div class="bc-label">Melhor Horário · Abertura</div>
+        <div class="bc-val" style="color:var(--operadora)">09h00</div>
+        <div class="bc-sub">Média 83,30% de abertura</div>
+      </div>
+      <div class="best-card">
+        <div class="bc-icon">📅</div>
+        <div class="bc-label">Melhor Dia · Clique</div>
+        <div class="bc-val" style="color:var(--operadora)">Quinta</div>
+        <div class="bc-sub">Média 3,62% de cliques</div>
+      </div>
+      <div class="best-card">
+        <div class="bc-icon">📬</div>
+        <div class="bc-label">Melhor Dia · Abertura</div>
+        <div class="bc-val" style="color:var(--operadora)">Quarta</div>
+        <div class="bc-sub">Média 42,61% de abertura</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Emails Enviados por Mês</div>
+        <div class="month-chart">
+          <div class="mc"><div class="mb" style="height:100%" data-v="6.644"></div><div class="ml">Jan</div></div>
+          <div class="mc"><div class="mb" style="height:60%" data-v="4.646"></div><div class="ml">Fev</div></div>
+          <div class="mc"><div class="mb" style="height:63%" data-v="4.842"></div><div class="ml">Mar</div></div>
+          <div class="mc"><div class="mb" style="height:57%" data-v="4.176"></div><div class="ml">Abr</div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Taxa de Clique por Horário</div>
+        <div class="bar-chart">
+          <div class="bar-row"><div class="bl">09h</div><div class="bt"><div class="bf" style="width:0%"></div></div><div class="bv">0,00%</div></div>
+          <div class="bar-row hl"><div class="bl">10h ★</div><div class="bt"><div class="bf" style="width:100%"></div></div><div class="bv">5,35%</div></div>
+          <div class="bar-row"><div class="bl">11h</div><div class="bt"><div class="bf" style="width:48.6%"></div></div><div class="bv">2,60%</div></div>
+          <div class="bar-row"><div class="bl">13h</div><div class="bt"><div class="bf" style="width:78.9%"></div></div><div class="bv">4,22%</div></div>
+          <div class="bar-row"><div class="bl">14h</div><div class="bt"><div class="bf" style="width:21.7%"></div></div><div class="bv">1,16%</div></div>
+          <div class="bar-row"><div class="bl">15h</div><div class="bt"><div class="bf" style="width:58%"></div></div><div class="bv">3,10%</div></div>
+          <div class="bar-row"><div class="bl">16h</div><div class="bt"><div class="bf" style="width:0%"></div></div><div class="bv">0,00%</div></div>
+          <div class="bar-row"><div class="bl">17h</div><div class="bt"><div class="bf" style="width:0%"></div></div><div class="bv">0,00%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dual-charts">
+      <div class="chart-card">
+        <div class="chart-title">Taxa de Abertura por Horário</div>
+        <div class="bar-chart">
+          <div class="bar-row hl"><div class="bl">09h ★</div><div class="bt"><div class="bf" style="width:100%"></div></div><div class="bv">83,30%</div></div>
+          <div class="bar-row"><div class="bl">10h</div><div class="bt"><div class="bf" style="width:47.9%"></div></div><div class="bv">39,88%</div></div>
+          <div class="bar-row"><div class="bl">11h</div><div class="bt"><div class="bf" style="width:44.8%"></div></div><div class="bv">37,32%</div></div>
+          <div class="bar-row"><div class="bl">13h</div><div class="bt"><div class="bf" style="width:49.9%"></div></div><div class="bv">41,54%</div></div>
+          <div class="bar-row"><div class="bl">14h</div><div class="bt"><div class="bf" style="width:45.7%"></div></div><div class="bv">38,08%</div></div>
+          <div class="bar-row"><div class="bl">15h</div><div class="bt"><div class="bf" style="width:50.9%"></div></div><div class="bv">42,39%</div></div>
+          <div class="bar-row"><div class="bl">16h</div><div class="bt"><div class="bf" style="width:16.4%"></div></div><div class="bv">13,63%</div></div>
+          <div class="bar-row"><div class="bl">17h</div><div class="bt"><div class="bf" style="width:21.1%"></div></div><div class="bv">17,60%</div></div>
+          <div class="bar-row"><div class="bl">20h</div><div class="bt"><div class="bf" style="width:18.6%"></div></div><div class="bv">15,50%</div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Taxa por Dia da Semana</div>
+        <div style="margin-bottom:16px">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:9px">Clique (%)</div>
+          <div class="bar-chart">
+            <div class="bar-row"><div class="bl">Segunda</div><div class="bt"><div class="bf" style="width:38.4%"></div></div><div class="bv">1,39%</div></div>
+            <div class="bar-row"><div class="bl">Terça</div><div class="bt"><div class="bf" style="width:82.9%"></div></div><div class="bv">3,00%</div></div>
+            <div class="bar-row"><div class="bl">Quarta</div><div class="bt"><div class="bf" style="width:83.4%"></div></div><div class="bv">3,02%</div></div>
+            <div class="bar-row hl"><div class="bl">Quinta ★</div><div class="bt"><div class="bf" style="width:100%"></div></div><div class="bv">3,62%</div></div>
+            <div class="bar-row"><div class="bl">Sexta</div><div class="bt"><div class="bf" style="width:43.9%"></div></div><div class="bv">1,59%</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:9px">Abertura (%)</div>
+          <div class="bar-chart">
+            <div class="bar-row"><div class="bl">Segunda</div><div class="bt"><div class="bf" style="width:93.2%"></div></div><div class="bv">39,69%</div></div>
+            <div class="bar-row"><div class="bl">Terça</div><div class="bt"><div class="bf" style="width:68.2%"></div></div><div class="bv">29,11%</div></div>
+            <div class="bar-row hl"><div class="bl">Quarta ★</div><div class="bt"><div class="bf" style="width:100%"></div></div><div class="bv">42,61%</div></div>
+            <div class="bar-row"><div class="bl">Quinta</div><div class="bt"><div class="bf" style="width:91.4%"></div></div><div class="bv">38,96%</div></div>
+            <div class="bar-row"><div class="bl">Sexta</div><div class="bt"><div class="bf" style="width:84.2%"></div></div><div class="bv">35,90%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="chart-title">Volume Mensal</div>
+        <table class="sum-table">
+          <thead><tr><th>Mês</th><th style="text-align:right">Emails Enviados</th><th style="text-align:right">% do Total</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mdot"></span>Janeiro</td><td class="sn">6.644</td><td class="sn">32,7%</td></tr>
+            <tr><td><span class="mdot"></span>Fevereiro</td><td class="sn">4.646</td><td class="sn">22,9%</td></tr>
+            <tr><td><span class="mdot"></span>Março</td><td class="sn">4.842</td><td class="sn">23,8%</td></tr>
+            <tr><td><span class="mdot"></span>Abril</td><td class="sn">4.176</td><td class="sn">20,6%</td></tr>
+            <tr><td style="font-weight:500;color:var(--text)">Total</td><td class="sn" style="font-family:'Syne',sans-serif;font-size:15px">20.308</td><td class="sn">100%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="summary-card">
+        <div class="chart-title">Insights · Operadora</div>
+        <div class="ibox" style="background:var(--operadora-glow);border:1px solid var(--operadora-dim)">
+          <span class="itag" style="color:var(--operadora)">⚡ Melhor janela de envio</span>
+          <span class="itext">Quinta-feira às 10h maximiza cliques. Para abertura, priorize Quarta às 09h (83,3%).</span>
+        </div>
+        <div class="ibox" style="background:var(--surface2);border:1px solid var(--border)">
+          <span class="itag" style="color:var(--muted)">📈 Performance geral</span>
+          <span class="itext">Taxa de abertura (37,77%) superior ao Clube (27,95%), reflexo de listas menores e segmentadas.</span>
+        </div>
+        <div class="ibox" style="background:var(--surface2);border:1px solid var(--border)">
+          <span class="itag" style="color:var(--muted)">⚠️ Atenção</span>
+          <span class="itext">Janeiro concentrou 32,7% do volume. Distribuição mais uniforme pode melhorar o engajamento.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cancel-section">
+      <div class="cancel-header">
+        <div class="chart-title" style="margin-bottom:0">Cancelamentos · Operadora</div>
+        <span class="cancel-badge">⚠ Descadastros</span>
+      </div>
+      <div class="cancel-grid">
+        <div class="ckpi">
+          <div class="ckpi-label">Total</div>
+          <div class="ckpi-val">13</div>
+          <div class="ckpi-sub">Jan–Abr 2026</div>
+        </div>
+        <div>
+          <div class="ctitle">Por Mês</div>
+          <div class="cr hl"><div class="crl">Janeiro ★</div><div class="crt"><div class="crf" style="width:100%"></div></div><div class="crv">7</div></div>
+          <div class="cr"><div class="crl">Fevereiro</div><div class="crt"><div class="crf" style="width:14%"></div></div><div class="crv">1</div></div>
+          <div class="cr"><div class="crl">Março</div><div class="crt"><div class="crf" style="width:57%"></div></div><div class="crv">4</div></div>
+          <div class="cr"><div class="crl">Abril</div><div class="crt"><div class="crf" style="width:14%"></div></div><div class="crv">1</div></div>
+        </div>
+        <div>
+          <div class="ctitle">Por Horário</div>
+          <div class="cr"><div class="crl">10h</div><div class="crt"><div class="crf" style="width:50%"></div></div><div class="crv">2</div></div>
+          <div class="cr"><div class="crl">13h</div><div class="crt"><div class="crf" style="width:25%"></div></div><div class="crv">1</div></div>
+          <div class="cr"><div class="crl">14h</div><div class="crt"><div class="crf" style="width:50%"></div></div><div class="crv">2</div></div>
+          <div class="cr hl"><div class="crl">15h ★</div><div class="crt"><div class="crf" style="width:100%"></div></div><div class="crv">4</div></div>
+          <div class="cr hl"><div class="crl">16h ★</div><div class="crt"><div class="crf" style="width:100%"></div></div><div class="crv">4</div></div>
+        </div>
+        <div>
+          <div class="ctitle">Por Dia da Semana</div>
+          <div class="cr"><div class="crl">Segunda</div><div class="crt"><div class="crf" style="width:40%"></div></div><div class="crv">2</div></div>
+          <div class="cr hl"><div class="crl">Terça ★</div><div class="crt"><div class="crf" style="width:100%"></div></div><div class="crv">5</div></div>
+          <div class="cr"><div class="crl">Quarta</div><div class="crt"><div class="crf" style="width:60%"></div></div><div class="crv">3</div></div>
+          <div class="cr"><div class="crl">Quinta</div><div class="crt"><div class="crf" style="width:20%"></div></div><div class="crv">1</div></div>
+          <div class="cr"><div class="crl">Sexta</div><div class="crt"><div class="crf" style="width:40%"></div></div><div class="crv">2</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-operadora -->
+
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) {
+    p.classList.remove('is-active');
+  });
+  document.getElementById('btn-clube').className = 'tab-btn';
+  document.getElementById('btn-operadora').className = 'tab-btn';
+
+  document.getElementById('panel-' + tab).classList.add('is-active');
+  document.getElementById('btn-' + tab).classList.add('is-active-' + (tab === 'clube' ? 'clube' : 'operadora'));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
